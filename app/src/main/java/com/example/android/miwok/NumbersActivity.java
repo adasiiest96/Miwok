@@ -15,38 +15,34 @@ import java.util.ArrayList;
 public class NumbersActivity extends AppCompatActivity {
     MediaPlayer mplay;
 
-    /*
-  // Creting a audiomanager to register audio focus
-   */
+
+    //     Creting a audiomanager to register audio focus
+
     Context mContext;
     AudioManager maudiomanager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
 
     AudioManager.OnAudioFocusChangeListener afChangelistener = new AudioManager.OnAudioFocusChangeListener() {
         @Override
         public void onAudioFocusChange(int focusChange) {
-            if(focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT){
+            if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
                 mplay.pause();
                 mplay.seekTo(0);
-            }
-            else if(focusChange == AudioManager.AUDIOFOCUS_LOSS){
+            } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
                 mplay.stop();
                 releaseMediaPlayer();
 
-            }
-
-            else if(focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK){
+            } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
                 mplay.pause();
                 mplay.seekTo(0);
 
-            }
-            else if(focusChange == AudioManager.AUDIOFOCUS_GAIN){
+            } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
                 mplay.start();
             }
         }
     };
 
 
-    MediaPlayer.OnCompletionListener myOnCompleteListener =  new MediaPlayer.OnCompletionListener() {
+    MediaPlayer.OnCompletionListener myOnCompleteListener = new MediaPlayer.OnCompletionListener() {
         @Override
         public void onCompletion(MediaPlayer mediaPlayer) {
             releaseMediaPlayer();
@@ -68,32 +64,25 @@ public class NumbersActivity extends AppCompatActivity {
         //Create an Word  ArrayList of Eng Words
 
         final ArrayList<Word> words = new ArrayList<Word>();
-        words.add(new Word("one", "এক",R.drawable.number_one,R.raw.number_one));
-        words.add(new Word("two", "দুই",R.drawable.number_two,R.raw.number_two));
-        words.add(new Word("three", "তিন",R.drawable.number_three,R.raw.number_three));
-        words.add(new Word("four", "চার",R.drawable.number_four,R.raw.number_four));
-        words.add(new Word("five", "পাঁচ",R.drawable.number_five,R.raw.number_five));
-        words.add(new Word("six", "ছয়",R.drawable.number_six,R.raw.number_six));
-        words.add(new Word("seven", "সাত",R.drawable.number_seven,R.raw.number_seven));
-        words.add(new Word("eight", "আট",R.drawable.number_eight,R.raw.number_eight));
-        words.add(new Word("nine", "নয়",R.drawable.number_nine,R.raw.number_nine));
-        words.add(new Word("ten", "দশ",R.drawable.number_ten,R.raw.number_nine));
+        words.add(new Word("one", "এক", R.drawable.number_one, R.raw.number_one));
+        words.add(new Word("two", "দুই", R.drawable.number_two, R.raw.number_two));
+        words.add(new Word("three", "তিন", R.drawable.number_three, R.raw.number_three));
+        words.add(new Word("four", "চার", R.drawable.number_four, R.raw.number_four));
+        words.add(new Word("five", "পাঁচ", R.drawable.number_five, R.raw.number_five));
+        words.add(new Word("six", "ছয়", R.drawable.number_six, R.raw.number_six));
+        words.add(new Word("seven", "সাত", R.drawable.number_seven, R.raw.number_seven));
+        words.add(new Word("eight", "আট", R.drawable.number_eight, R.raw.number_eight));
+        words.add(new Word("nine", "নয়", R.drawable.number_nine, R.raw.number_nine));
+        words.add(new Word("ten", "দশ", R.drawable.number_ten, R.raw.number_nine));
 
-//        LinearLayout rootView = (LinearLayout) findViewById(R.id.rootView);
-//        for(int index =0 ;index < words.size();index++) {
-//            TextView wordView = new TextView(this);
-//            wordView.setText(words.get(index));
-//            rootView.addView(wordView);
 //
-//        }
-
         // Create an {@link ArrayAdapter}, whose data source is a list of Strings. The
         // adapter knows how to create layouts for each item in the list, using the
         // simple_list_item_1.xml layout resource defined in the Android framework.
         // This list item layout contains a single {@link TextView}, which the adapter will set to
         // display a single word.
         WordAdapter adapter =
-                new WordAdapter(this, words,R.color.category_numbers);
+                new WordAdapter(this, words, R.color.category_numbers);
 
         // Find the {@link ListView} object in the view hierarchy of the {@link Activity}.
         // There should be a {@link ListView} with the view ID called list, which is declared in the
@@ -107,18 +96,21 @@ public class NumbersActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
 
 
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
-                Toast t =Toast.makeText(NumbersActivity.this,"playing",Toast.LENGTH_SHORT);
+                Toast t = Toast.makeText(NumbersActivity.this, "playing", Toast.LENGTH_SHORT);
                 t.show();
                 releaseMediaPlayer();
 
-                int result = maudiomanager.requestAudioFocus(afChangelistener,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+                int result = maudiomanager.requestAudioFocus(afChangelistener,
+                        //Type of stream
+                        AudioManager.STREAM_MUSIC,
+                        // Duration Hint
+                        AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
 
-                if(result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
-                    mplay = MediaPlayer.create(NumbersActivity.this,words.get(pos).getAudioResourceId());
+                if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                    mplay = MediaPlayer.create(NumbersActivity.this, words.get(pos).getAudioResourceId());
                     mplay.start();
                     mplay.setOnCompletionListener(myOnCompleteListener);
                 }
@@ -130,8 +122,8 @@ public class NumbersActivity extends AppCompatActivity {
     /**
      * Clean up the media player by calling release() method on mplay
      */
-    private void releaseMediaPlayer(){
-        if(mplay != null){
+    private void releaseMediaPlayer() {
+        if (mplay != null) {
             mplay.release();
 
             mplay = null;

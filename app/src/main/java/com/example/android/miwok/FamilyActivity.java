@@ -23,28 +23,24 @@ public class FamilyActivity extends AppCompatActivity {
     AudioManager.OnAudioFocusChangeListener afChangelistener = new AudioManager.OnAudioFocusChangeListener() {
         @Override
         public void onAudioFocusChange(int focusChange) {
-            if(focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT){
+            if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
                 mplay.pause();
                 mplay.seekTo(0);
-            }
-            else if(focusChange == AudioManager.AUDIOFOCUS_LOSS){
+            } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
                 mplay.stop();
                 releaseMediaPlayer();
 
-            }
-
-            else if(focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK){
+            } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
                 mplay.pause();
                 mplay.seekTo(0);
 
-            }
-            else if(focusChange == AudioManager.AUDIOFOCUS_GAIN){
+            } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
                 mplay.start();
             }
         }
     };
 
-    MediaPlayer.OnCompletionListener myOnCompleteListener =  new MediaPlayer.OnCompletionListener() {
+    MediaPlayer.OnCompletionListener myOnCompleteListener = new MediaPlayer.OnCompletionListener() {
         @Override
         public void onCompletion(MediaPlayer mediaPlayer) {
             releaseMediaPlayer();
@@ -63,20 +59,20 @@ public class FamilyActivity extends AppCompatActivity {
         setContentView(R.layout.word_list);
 
         //Create an ArrayList of words object and fit the colors
-       final ArrayList<Word> family = new ArrayList<Word>();
+        final ArrayList<Word> family = new ArrayList<Word>();
 
-        family.add(new Word("father", "পিতা",R.drawable.family_father,R.raw.family_father));
-        family.add(new Word("mother", "মা",R.drawable.family_mother,R.raw.family_mother));
-        family.add(new Word("son", "পুত্র",R.drawable.family_son,R.raw.family_son));
-        family.add(new Word("daughter", "কন্যা",R.drawable.family_daughter,R.raw.family_daughter));
-        family.add(new Word("older brother", "বড় দাদা",R.drawable.family_older_brother,R.raw.family_older_brother));
-        family.add(new Word("younger brother", "ছোট ভাই",R.drawable.family_younger_brother,R.raw.family_younger_brother));
-        family.add(new Word("older sister", "বড় দিদি",R.drawable.family_older_sister,R.raw.family_older_sister));
-        family.add(new Word("younger sister", "ছোট বোন",R.drawable.family_younger_sister,R.raw.family_younger_sister));
-        family.add(new Word("grandmother", "দিদা",R.drawable.family_grandmother,R.raw.family_grandmother));
-        family.add(new Word("grandfather", "দাদু",R.drawable.family_grandfather,R.raw.family_grandfather));
+        family.add(new Word("father", "পিতা", R.drawable.family_father, R.raw.family_father));
+        family.add(new Word("mother", "মা", R.drawable.family_mother, R.raw.family_mother));
+        family.add(new Word("son", "পুত্র", R.drawable.family_son, R.raw.family_son));
+        family.add(new Word("daughter", "কন্যা", R.drawable.family_daughter, R.raw.family_daughter));
+        family.add(new Word("older brother", "বড় দাদা", R.drawable.family_older_brother, R.raw.family_older_brother));
+        family.add(new Word("younger brother", "ছোট ভাই", R.drawable.family_younger_brother, R.raw.family_younger_brother));
+        family.add(new Word("older sister", "বড় দিদি", R.drawable.family_older_sister, R.raw.family_older_sister));
+        family.add(new Word("younger sister", "ছোট বোন", R.drawable.family_younger_sister, R.raw.family_younger_sister));
+        family.add(new Word("grandmother", "দিদা", R.drawable.family_grandmother, R.raw.family_grandmother));
+        family.add(new Word("grandfather", "দাদু", R.drawable.family_grandfather, R.raw.family_grandfather));
 
-        WordAdapter myAdapter = new WordAdapter(this,family,R.color.category_family);
+        WordAdapter myAdapter = new WordAdapter(this, family, R.color.category_family);
 
         ListView listView = (ListView) findViewById(R.id.list);
         listView.setAdapter(myAdapter);
@@ -84,14 +80,14 @@ public class FamilyActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
-                Toast t =Toast.makeText(FamilyActivity.this,"playing",Toast.LENGTH_SHORT);
+                Toast t = Toast.makeText(FamilyActivity.this, "playing", Toast.LENGTH_SHORT);
                 t.show();
                 releaseMediaPlayer();
 
-                int result = maudiomanager.requestAudioFocus(afChangelistener,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+                int result = maudiomanager.requestAudioFocus(afChangelistener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
 
-                if(result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
-                    mplay = MediaPlayer.create(FamilyActivity.this,family.get(pos).getAudioResourceId());
+                if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                    mplay = MediaPlayer.create(FamilyActivity.this, family.get(pos).getAudioResourceId());
                     mplay.start();
                     mplay.setOnCompletionListener(myOnCompleteListener);
                 }
@@ -99,8 +95,9 @@ public class FamilyActivity extends AppCompatActivity {
         });
 
     }
-    private void releaseMediaPlayer(){
-        if(mplay != null){
+
+    private void releaseMediaPlayer() {
+        if (mplay != null) {
             mplay.release();
 
             mplay = null;
