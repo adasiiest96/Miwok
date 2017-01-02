@@ -1,5 +1,7 @@
 package com.example.android.miwok;
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +14,33 @@ import java.util.ArrayList;
 
 public class NumbersActivity extends AppCompatActivity {
     MediaPlayer mplay;
+    Context mContext;
+    AudioManager maudiomanager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+
+    AudioManager.OnAudioFocusChangeListener afChangelistener = new AudioManager.OnAudioFocusChangeListener() {
+        @Override
+        public void onAudioFocusChange(int focusChange) {
+            if(focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT){
+                mplay.pause();
+                mplay.seekTo(0);
+            }
+            else if(focusChange == AudioManager.AUDIOFOCUS_LOSS){
+                mplay.stop();
+                releaseMediaPlayer();
+
+            }
+
+            else if(focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK){
+                mplay.pause();
+                mplay.seekTo(0);
+
+            }
+            else if(focusChange == AudioManager.AUDIOFOCUS_GAIN){
+                mplay.start();
+            }
+        }
+    };
+
 
     MediaPlayer.OnCompletionListener myOnCompleteListener =  new MediaPlayer.OnCompletionListener() {
         @Override
@@ -30,6 +59,7 @@ public class NumbersActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.word_list);
+
 
         //Create an Word  ArrayList of Eng Words
 
@@ -72,15 +102,23 @@ public class NumbersActivity extends AppCompatActivity {
         // 1 argument, which is the {@link ArrayAdapter} with the variable name itemsAdapter.
         listView.setAdapter(adapter);
 
+
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
                 Toast t =Toast.makeText(NumbersActivity.this,"playing",Toast.LENGTH_SHORT);
                 t.show();
                 releaseMediaPlayer();
-                mplay = MediaPlayer.create(NumbersActivity.this,words.get(pos).getAudioResourceId());
-                mplay.start();
-                mplay.setOnCompletionListener(myOnCompleteListener);
+
+                int result = maudiomanager.requestAudioFocus(afChangelistener,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+
+                if(result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
+                    mplay = MediaPlayer.create(NumbersActivity.this,words.get(pos).getAudioResourceId());
+                    mplay.start();
+                    mplay.setOnCompletionListener(myOnCompleteListener);
+                }
+
             }
         });
     }
@@ -94,6 +132,7 @@ public class NumbersActivity extends AppCompatActivity {
 
             mplay = null;
         }
+        maudiomanager.abandonAudioFocus(afChangelistener);
     }
 
 }
