@@ -14,6 +14,10 @@ import java.util.ArrayList;
 
 public class NumbersActivity extends AppCompatActivity {
     MediaPlayer mplay;
+
+    /*
+  // Creting a audiomanager to register audio focus
+   */
     Context mContext;
     AudioManager maudiomanager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
 

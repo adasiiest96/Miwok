@@ -1,5 +1,7 @@
 package com.example.android.miwok;
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +14,35 @@ import java.util.ArrayList;
 
 public class PhrasesActivity extends AppCompatActivity {
     MediaPlayer mplay;
+    /*
+  // Creting a audiomanager to register audio focus
+   */
+    Context mContext;
+    AudioManager maudiomanager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+
+    AudioManager.OnAudioFocusChangeListener afChangelistener = new AudioManager.OnAudioFocusChangeListener() {
+        @Override
+        public void onAudioFocusChange(int focusChange) {
+            if(focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT){
+                mplay.pause();
+                mplay.seekTo(0);
+            }
+            else if(focusChange == AudioManager.AUDIOFOCUS_LOSS){
+                mplay.stop();
+                releaseMediaPlayer();
+
+            }
+
+            else if(focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK){
+                mplay.pause();
+                mplay.seekTo(0);
+
+            }
+            else if(focusChange == AudioManager.AUDIOFOCUS_GAIN){
+                mplay.start();
+            }
+        }
+    };
 
     MediaPlayer.OnCompletionListener myOnCompleteListener =  new MediaPlayer.OnCompletionListener() {
         @Override
@@ -56,9 +87,13 @@ public class PhrasesActivity extends AppCompatActivity {
                 Toast t =Toast.makeText(PhrasesActivity.this,"playing",Toast.LENGTH_SHORT);
                 t.show();
                 releaseMediaPlayer();
-                mplay = MediaPlayer.create(PhrasesActivity.this,phrases.get(pos).getAudioResourceId());
-                mplay.start();
-                mplay.setOnCompletionListener(myOnCompleteListener);
+                int result = maudiomanager.requestAudioFocus(afChangelistener,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+
+                if(result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
+                    mplay = MediaPlayer.create(PhrasesActivity.this,phrases.get(pos).getAudioResourceId());
+                    mplay.start();
+                    mplay.setOnCompletionListener(myOnCompleteListener);
+                }
             }
         });
 
@@ -70,6 +105,7 @@ public class PhrasesActivity extends AppCompatActivity {
 
             mplay = null;
         }
+        maudiomanager.abandonAudioFocus(afChangelistener);
     }
 
 
