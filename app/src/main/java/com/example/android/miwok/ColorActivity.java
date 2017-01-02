@@ -20,6 +20,15 @@ public class ColorActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * Calling to onStop method to clear the audio resourcce
+     */
+    @Override
+    protected void onStop() {
+        super.onStop();
+        releaseMediaPlayer();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
