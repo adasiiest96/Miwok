@@ -11,7 +11,14 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class NumbersActivity extends AppCompatActivity {
-    MediaPlayer play;
+    MediaPlayer mplay;
+
+    MediaPlayer.OnCompletionListener myOnCompleteListener =  new MediaPlayer.OnCompletionListener() {
+        @Override
+        public void onCompletion(MediaPlayer mediaPlayer) {
+            releaseMediaPlayer();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,11 +71,23 @@ public class NumbersActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
                 Toast t =Toast.makeText(NumbersActivity.this,"playing",Toast.LENGTH_SHORT);
                 t.show();
-
-                play = MediaPlayer.create(NumbersActivity.this,words.get(pos).getAudioResourceId());
-                play.start();
+                releaseMediaPlayer();
+                mplay = MediaPlayer.create(NumbersActivity.this,words.get(pos).getAudioResourceId());
+                mplay.start();
+                mplay.setOnCompletionListener(myOnCompleteListener);
             }
         });
+    }
+
+    /**
+     * Clean up the media player by calling release() method on mplay
+     */
+    private void releaseMediaPlayer(){
+        if(mplay != null){
+            mplay.release();
+
+            mplay = null;
+        }
     }
 
 }
